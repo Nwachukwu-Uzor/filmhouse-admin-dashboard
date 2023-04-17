@@ -27,9 +27,13 @@ const MainLayout = () => {
         >
           <Sidebar />
         </div>
-        <div className="col-span-4">
-          <Outlet />
-        </div>
+        <main className="col-span-4">
+          <article className="flex items-center justify-center py-4">
+            <div className="w-[90%] max-w-[1200px]">
+              <Outlet />
+            </div>
+          </article>
+        </main>
       </div>
     </section>
   );
