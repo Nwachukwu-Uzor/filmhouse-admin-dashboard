@@ -1,11 +1,15 @@
 import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
+import SidebarContextProvider from "./context/sidebar/sidebarContextProvider";
+
+const MainLayout = lazy(() => import("./layout/mainLayout"));
+
 const Home = lazy(() => import("./pages/home"));
 const Events = lazy(() => import("./pages/events"));
 const NotFound = lazy(() => import("./pages/notFound"));
+const Tickets = lazy(() => import("./pages/tickets"));
 const Login = lazy(() => import("./pages/login"));
-const MainLayout = lazy(() => import("./layout/mainLayout"));
 
 const router = createBrowserRouter([
   {
@@ -19,7 +23,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <SidebarContextProvider>
+        <MainLayout />
+      </SidebarContextProvider>
+    ),
     children: [
       {
         index: true,
@@ -34,6 +42,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<h1>Loading....</h1>}>
             <Events />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/tickets",
+        element: (
+          <Suspense fallback={<h1>Loading....</h1>}>
+            <Tickets />
           </Suspense>
         ),
       },
