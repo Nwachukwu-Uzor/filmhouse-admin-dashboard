@@ -2,6 +2,8 @@ import React, { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import SidebarContextProvider from "./context/sidebar/sidebarContextProvider";
+import { fetchEvents } from "./queries";
+import { FullScreenLoader } from "./components";
 
 const MainLayout = lazy(() => import("./layout/mainLayout"));
 
@@ -24,15 +26,17 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <SidebarContextProvider>
-        <MainLayout />
-      </SidebarContextProvider>
+      <Suspense fallback={<FullScreenLoader />}>
+        <SidebarContextProvider>
+          <MainLayout />
+        </SidebarContextProvider>
+      </Suspense>
     ),
     children: [
       {
         index: true,
         element: (
-          <Suspense fallback={<h1>Loading....</h1>}>
+          <Suspense fallback={<FullScreenLoader />}>
             <Home />
           </Suspense>
         ),
@@ -40,15 +44,16 @@ const router = createBrowserRouter([
       {
         path: "/events",
         element: (
-          <Suspense fallback={<h1>Loading....</h1>}>
+          <Suspense fallback={<FullScreenLoader />}>
             <Events />
           </Suspense>
         ),
+        loader: fetchEvents,
       },
       {
         path: "/tickets",
         element: (
-          <Suspense fallback={<h1>Loading....</h1>}>
+          <Suspense fallback={<FullScreenLoader />}>
             <Tickets />
           </Suspense>
         ),
