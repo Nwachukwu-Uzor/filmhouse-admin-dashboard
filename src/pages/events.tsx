@@ -1,6 +1,7 @@
 import React, { useState, useEffect, MouseEvent, ChangeEvent } from "react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { AiFillFileImage, AiOutlineClose } from "react-icons/ai";
@@ -12,16 +13,23 @@ import {
   Modal,
   TextInput,
   Button,
+  DateTimePicker,
 } from "../components";
 
 import { EventsApiResponse } from "../queries/fetchEvents";
 import { generateRandomId } from "../utils";
 
+const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
+
+interface CreateEventApiResponse {
+  message: string;
+}
 const initialFieldValues = {
   name: "",
   description: "",
 };
 
+const DEFAULT_DATE_VALUE = new Date().toISOString().slice(0, -1);
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .required("Event name is required")
@@ -35,6 +43,8 @@ const Events = () => {
   const { events } = useLoaderData() as EventsApiResponse;
   const navigation = useNavigation();
   const [openModal, setOpenModal] = useState(false);
+  const [startDate, setStartDate] = useState(DEFAULT_DATE_VALUE);
+  const [endDate, setEndDate] = useState(DEFAULT_DATE_VALUE);
 
   const [banner, setBanner] = useState<File | null | undefined>(null);
   const [previewBanner, setPreviewBanner] = useState<string | null | undefined>(
@@ -63,17 +73,20 @@ const Events = () => {
       return;
     }
 
-    setGalleryImages(
-      Array.from(files)?.map((file) => ({ id: generateRandomId(10), file }))
-    );
-  };
+    let selectedFiles = Array.from(files)?.map((file) => ({
+      id: generateRandomId(10),
+      file,
+    }));
 
-  const { values, handleSubmit, handleChange, touched, errors, isSubmitting } =
-    useFormik({
-      initialValues: initialFieldValues,
-      validationSchema: validationSchema,
-      onSubmit: async (value, { resetForm }) => {},
-    });
+    if (galleryImages) {
+      selectedFiles = [...galleryImages, ...selectedFiles];
+    }
+
+    if (selectedFiles.length > 3) {
+      selectedFiles = selectedFiles.slice(-3);
+    }
+    setGalleryImages(selectedFiles);
+  };
 
   // create a preview as a side effect, whenever selected file is changed
   useEffect(() => {
@@ -114,6 +127,7 @@ const Events = () => {
       event.stopPropagation();
     }
     setOpenModal((currentValue) => !currentValue);
+    clearFields();
   };
 
   const deleteBanner = () => {
@@ -124,6 +138,103 @@ const Events = () => {
     setGalleryImages((images) => images.filter((img) => img?.id !== id));
   };
 
+  const handleDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (Date.now() > Date.parse(value)) {
+      return;
+    }
+    if (name === "startDate") {
+      setStartDate(value);
+      return;
+    }
+
+    if (name === "endDate") {
+      console.log("Here");
+      setEndDate(value);
+      return;
+    }
+  };
+
+  const {
+    values,
+    handleSubmit,
+    handleChange,
+    touched,
+    errors,
+    isSubmitting,
+    resetForm,
+  } = useFormik({
+    initialValues: initialFieldValues,
+    validationSchema: validationSchema,
+    onSubmit: async (values, { resetForm }) => {
+      if (!banner) {
+        Swal.fire({
+          title: "Banner is Required",
+          text: "Please select a banner image to proceed",
+          icon: "error",
+        });
+        return;
+      }
+      if (galleryImages?.length < 3) {
+        Swal.fire({
+          title: "Gallery Images Required",
+          text: "Please select at least 3 gallery images to proceed",
+          icon: "error",
+        });
+        return;
+      }
+      try {
+        const formData = new FormData();
+        formData.append("name", values?.name);
+        formData.append("description", values?.description);
+        formData.append("startDate", startDate);
+        formData.append("endDate", endDate);
+        formData.append("image", banner ? banner : "");
+        for (let galleryImage of galleryImages) {
+          formData.append("images", galleryImage?.file);
+        }
+
+        const token = localStorage.getItem("filmhouse-token");
+        const response = await axios.post<CreateEventApiResponse>(
+          `${baseUrl}/event/create`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        Swal.fire({
+          icon: "success",
+          text: response?.data?.message ?? "Event created successfully",
+          title: "Event Created",
+          didClose: () => {
+            clearFields();
+            toast.success(
+              response?.data?.message ?? "Event created successfully"
+            );
+          },
+        });
+      } catch (error: any) {
+        Swal.fire({
+          title: "An Error Occurred",
+          text:
+            error?.response?.data?.message ??
+            error?.message ??
+            "Unable to Upload Event",
+          icon: "error",
+        });
+      }
+    },
+  });
+
+  const clearFields = () => {
+    setStartDate(DEFAULT_DATE_VALUE);
+    setEndDate(DEFAULT_DATE_VALUE);
+    setGalleryImages([]);
+    setBanner(null);
+    resetForm();
+  };
   return (
     <>
       <div className="flex justify-between">
@@ -143,7 +254,7 @@ const Events = () => {
           ))}
         </div>
       )}
-      <Modal open={openModal} handleClose={() => setOpenModal(false)}>
+      <Modal open={openModal} handleClose={handleToggleModal}>
         <div className="w-full bg-white shadow-sm py-4 px-3 rounded-md max-h-[80vh] overflow-y-auto">
           <Header level={3} text="Add Event" />
           <form
@@ -175,7 +286,20 @@ const Events = () => {
               id="email"
               type="text"
             />
-
+            <DateTimePicker
+              value={startDate}
+              label="Select Start Date"
+              name="startDate"
+              id="startDate"
+              handleChange={handleDateChange}
+            />
+            <DateTimePicker
+              value={endDate}
+              label="Select End Date"
+              name="endDate"
+              id="endDate"
+              handleChange={handleDateChange}
+            />
             <div className="flex flex-col gap-2 lg:gap-4">
               <div className="my-2 flex gap-2 justify-between">
                 <label
@@ -263,6 +387,7 @@ const Events = () => {
           </form>
         </div>
       </Modal>
+      {isSubmitting ? <FullScreenLoader /> : null}
     </>
   );
 };

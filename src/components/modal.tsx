@@ -2,7 +2,7 @@ import React, { FC, ReactNode, MouseEvent } from "react";
 
 interface ModalProps {
   open: boolean;
-  handleClose: (event: MouseEvent) => void;
+  handleClose: () => void;
   children?: ReactNode;
 }
 
