@@ -15,6 +15,7 @@ import {
 } from "../components";
 
 import { EventsApiResponse } from "../queries/fetchEvents";
+import { generateRandomId } from "../utils";
 
 const initialFieldValues = {
   name: "",
@@ -41,12 +42,12 @@ const Events = () => {
   );
 
   const [galleryImages, setGalleryImages] = useState<
-    { id: string; file: File }[] | undefined | null
-  >(null);
+    { id: string; file: File }[]
+  >([]);
 
   const [previewGalleryImages, setPreviewGalleryImages] = useState<
-    { id: string; url: string }[] | null
-  >(null);
+    { id: string; url: string }[]
+  >([]);
 
   const handleBannerChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event?.target?.files?.[0];
@@ -54,6 +55,17 @@ const Events = () => {
       return;
     }
     setBanner(file);
+  };
+
+  const handleGalleryImagesChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event?.target?.files;
+    if (!files) {
+      return;
+    }
+
+    setGalleryImages(
+      Array.from(files)?.map((file) => ({ id: generateRandomId(10), file }))
+    );
   };
 
   const { values, handleSubmit, handleChange, touched, errors, isSubmitting } =
@@ -77,16 +89,50 @@ const Events = () => {
     return () => URL.revokeObjectURL(objectUrl);
   }, [banner]);
 
-  const handleToggleModal = (event: MouseEvent) => {
-    event.stopPropagation();
+  useEffect(() => {
+    if (!galleryImages) {
+      setPreviewGalleryImages([]);
+      return;
+    }
+
+    setPreviewGalleryImages(
+      galleryImages?.map((img) => ({
+        id: img?.id,
+        url: URL.createObjectURL(img?.file),
+      }))
+    );
+
+    // const objectUrl = URL.createObjectURL(banner);
+    // setPreviewBanner(objectUrl);
+
+    // free memory when ever this component is unmounted
+    // return () => URL.revokeObjectURL(objectUrl);
+  }, [galleryImages]);
+
+  const handleToggleModal = (event?: MouseEvent) => {
+    if (event) {
+      event.stopPropagation();
+    }
     setOpenModal((currentValue) => !currentValue);
+  };
+
+  const deleteBanner = () => {
+    setBanner(null);
+  };
+
+  const deleteGalleryImage = (id: string) => {
+    setGalleryImages((images) => images.filter((img) => img?.id !== id));
   };
 
   return (
     <>
       <div className="flex justify-between">
         <Header text="Events" level={2} />
-        <button onClick={() => setOpenModal(true)}>Add Event</button>
+        <Button
+          color="black"
+          text="Add Event"
+          handleClick={handleToggleModal}
+        />
       </div>
       {navigation.state === "loading" ? (
         <FullScreenLoader />
@@ -98,10 +144,10 @@ const Events = () => {
         </div>
       )}
       <Modal open={openModal} handleClose={() => setOpenModal(false)}>
-        <div className="w-[90%] max-w-[700px] bg-white shadow-sm py-4 px-3 rounded-md">
+        <div className="w-full bg-white shadow-sm py-4 px-3 rounded-md max-h-[80vh] overflow-y-auto">
           <Header level={3} text="Add Event" />
           <form
-            className="my-2 flex flex-col gap-2 w-full"
+            className="my-2 flex flex-col gap-2 w-full overflow-auto"
             onSubmit={handleSubmit}
           >
             <p className="text-lg font-semibold">
@@ -157,14 +203,16 @@ const Events = () => {
                     alt="avatar"
                     className="w-full h-[200px] object-cover rounded-sm"
                   />
-                  <AiOutlineClose className="absolute top-2 right-2" />
+                  <span className="absolute top-2 right-2 h-7 w-7 flex items-center justify-center rounded-full cursor-pointer bg-white shadow-md">
+                    <AiOutlineClose onClick={deleteBanner} />
+                  </span>
                 </div>
               ) : null}
             </div>
             <div className="flex flex-col gap-2 lg:gap-4">
               <div className="my-2 flex gap-2 justify-between">
                 <label
-                  htmlFor="avatar"
+                  htmlFor="galleryImages"
                   className="flex flex-col gap-2 items-center w-fit lg:flex-row cursor-pointer"
                 >
                   <span className="font-bold">Select Gallery Images: </span>
@@ -176,17 +224,29 @@ const Events = () => {
                   type="file"
                   accept=".jpg,.png,.jpeg"
                   hidden
-                  name="avatar"
-                  id="avatar"
-                  onChange={handleBannerChange}
+                  name="galleryImages"
+                  id="galleryImages"
+                  onChange={handleGalleryImagesChange}
+                  multiple={true}
                 />
               </div>
-              {previewBanner ? (
-                <img
-                  src={previewBanner}
-                  alt="avatar"
-                  className="w-full h-[200px] object-cover rounded-sm"
-                />
+              {previewGalleryImages ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {previewGalleryImages?.map((image) => (
+                    <div key={image?.id} className="relative">
+                      <img
+                        src={image.url}
+                        alt="avatar"
+                        className="w-full h-[100px] object-cover rounded-md shadow-md"
+                      />
+                      <span className="absolute top-2 right-2 h-7 w-7 flex items-center justify-center rounded-full cursor-pointer bg-white shadow-md">
+                        <AiOutlineClose
+                          onClick={() => deleteGalleryImage(image?.id)}
+                        />
+                      </span>
+                    </div>
+                  ))}
+                </div>
               ) : null}
             </div>
             {isSubmitting ? (

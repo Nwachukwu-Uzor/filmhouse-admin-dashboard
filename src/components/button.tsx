@@ -1,9 +1,9 @@
-import React, { FC } from "react";
+import React, { FC, MouseEvent } from "react";
 
 interface ButtonProps {
   color?: "red" | "green" | "yellow" | "blue" | "black" | "white";
   text: string;
-  onClick?: () => void;
+  handleClick?: (event?: MouseEvent) => void;
   type?: "button" | "submit" | "reset";
   full?: boolean;
 }
@@ -17,12 +17,13 @@ const buttonColors = {
   white: "bg-white active:ring-white active:ring-2 text-black",
 };
 
-export const Button: FC<ButtonProps> = ({ type, color, text, full }) => {
+export const Button: FC<ButtonProps> = ({ type, color, text, full, handleClick }) => {
   return (
     <button
       className={`py-2 px-3 lg:px-4 rounded-md my-2 ${full ? "w-full" : ""} ${
         color ? buttonColors[color] : buttonColors["black"]
       }`}
+      onClick={handleClick}
     >
       {text}
     </button>
