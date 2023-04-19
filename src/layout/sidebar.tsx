@@ -20,7 +20,7 @@ export const Sidebar = () => {
     alert("Logout functionality to be implemented");
   };
   return (
-    <div className="h-full bg-black/95 text-white flex flex-col justify-between">
+    <div className="h-full bg-black/95 text-white flex flex-col justify-between border-[0.5px] border-black/95">
       <nav className="flex flex-col w-full gap-4" onClick={handleSidebarToggle}>
         {links.map(({ id, icon, text, to }) => (
           <SidebarLink key={id} icon={icon} to={to} text={text} />
