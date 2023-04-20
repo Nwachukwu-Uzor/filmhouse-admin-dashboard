@@ -278,17 +278,18 @@ const Events = () => {
               id="name"
               type="text"
             />
-            <TextInput
-              value={values?.description}
-              handleChange={handleChange}
-              touched={Boolean(touched?.description)}
-              isError={Boolean(errors?.description) ?? false}
-              name="description"
-              label="Description"
-              error={errors?.description ?? ""}
-              id="email"
-              type="text"
-            />
+            <div className="flex flex-col gap-2 my-3">
+              <label className="font-semibold text-sm">Description</label>
+              <textarea
+                className="w-full outline-0 rounded-md focus:outline-0 focus:outline-none focus:border-2 p-2 focus:border-yellow-300 focus:ring-0"
+                placeholder="Enter the event description"
+                name="description"
+                onChange={handleChange}
+              ></textarea>
+              {touched?.description && errors?.description ? (
+                <p className="text-sm text-red-500">{errors?.description}</p>
+              ) : null}
+            </div>
             <DateTimePicker
               value={startDate}
               label="Select Start Date"
