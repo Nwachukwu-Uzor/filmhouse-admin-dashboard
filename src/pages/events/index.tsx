@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { AiFillFileImage, AiOutlineClose } from "react-icons/ai";
-import { useLoaderData, useNavigation } from "react-router-dom";
+import { useLoaderData, useNavigation, useNavigate } from "react-router-dom";
 import {
   EventCard,
   FullScreenLoader,
@@ -14,10 +14,10 @@ import {
   TextInput,
   Button,
   DateTimePicker,
-} from "../components";
+} from "../../components";
 
-import { EventsApiResponse } from "../queries/fetchEvents";
-import { generateRandomId } from "../utils";
+import { EventsApiResponse } from "../../queries/fetchEvents";
+import { generateRandomId } from "../../utils";
 
 const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
 
@@ -42,6 +42,8 @@ const validationSchema = Yup.object().shape({
 const Events = () => {
   const { events } = useLoaderData() as EventsApiResponse;
   const navigation = useNavigation();
+  const navigate = useNavigate();
+
   const [openModal, setOpenModal] = useState(false);
   const [startDate, setStartDate] = useState(DEFAULT_DATE_VALUE);
   const [endDate, setEndDate] = useState(DEFAULT_DATE_VALUE);
@@ -210,6 +212,7 @@ const Events = () => {
           title: "Event Created",
           didClose: () => {
             clearFields();
+            navigate(0);
             toast.success(
               response?.data?.message ?? "Event created successfully"
             );
@@ -255,7 +258,7 @@ const Events = () => {
         </div>
       )}
       <Modal open={openModal} handleClose={handleToggleModal}>
-        <div className="w-full bg-white shadow-sm py-4 px-3 rounded-md max-h-[80vh] overflow-y-auto">
+        <div className="w-full bg-white shadow-sm py-4 px-3 rounded-md max-h-[80vh] overflow-y-auto hide-scrollbar">
           <Header level={3} text="Add Event" />
           <form
             className="my-2 flex flex-col gap-2 w-full overflow-auto"
@@ -304,7 +307,7 @@ const Events = () => {
               <div className="my-2 flex gap-2 justify-between">
                 <label
                   htmlFor="avatar"
-                  className="flex flex-col gap-2 items-center w-fit lg:flex-row cursor-pointer"
+                  className="flex gap-2 items-center w-fit cursor-pointer"
                 >
                   <span className="font-bold">Select Banner: </span>
                   <span className="h-[40px] w-[40px] bg-yellow-100 rounded-full flex items-center justify-center">
@@ -337,7 +340,7 @@ const Events = () => {
               <div className="my-2 flex gap-2 justify-between">
                 <label
                   htmlFor="galleryImages"
-                  className="flex flex-col gap-2 items-center w-fit lg:flex-row cursor-pointer"
+                  className="flex gap-2 items-center w-fit cursor-pointer"
                 >
                   <span className="font-bold">Select Gallery Images: </span>
                   <span className="h-[40px] w-[40px] bg-yellow-100 rounded-full flex items-center justify-center">
@@ -373,17 +376,7 @@ const Events = () => {
                 </div>
               ) : null}
             </div>
-            {isSubmitting ? (
-              <p className="">
-                <svg
-                  className="animate-spin h-5 w-5 mr-3 ..."
-                  viewBox="0 0 24 24"
-                ></svg>
-                Submitting
-              </p>
-            ) : (
-              <Button text="Submit" color="green" type="submit" />
-            )}
+            <Button text="Submit" color="green" type="submit" />
           </form>
         </div>
       </Modal>

@@ -12,7 +12,7 @@ export const Modal: FC<ModalProps> = ({ children, open, handleClose }) => {
       {open ? (
         <div className="fixed inset-0 z-30 flex items-center justify-center duration-200">
           <div
-            className="absolute inset-0 border-2 border-red-500 bg-black/75 z-40"
+            className="absolute inset-0 bg-black/75 z-40"
             onClick={handleClose}
           ></div>
           <div

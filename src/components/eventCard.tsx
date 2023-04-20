@@ -16,6 +16,7 @@ export interface Event {
   createdOn: string;
   approvalStatus: "Approved" | "Declined" | "Pending";
   code: string;
+  galleryImages?: { _id: string; url: string }[];
 }
 
 export const EventCard: FC<Event> = ({

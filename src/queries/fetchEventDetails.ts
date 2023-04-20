@@ -3,21 +3,18 @@ import { Event } from "../components/eventCard";
 const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
 
 export interface EventsApiResponse {
-  events: Event[];
-  totalCount: number;
-  page: number;
-  totalPages: number;
+  event: Event;
 }
 
-export const fetchEvents = async () => {
+export const fetchEventDetails = async (id: string) => {
   const token = localStorage.getItem("filmhouse-token");
   const response = await axios.get<EventsApiResponse>(
-    `${baseUrl}/event/events`,
+    `${baseUrl}/event/details/${id}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     }
   );
-  return { ...response?.data };
+  return { ...response?.data?.event };
 };

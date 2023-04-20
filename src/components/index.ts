@@ -6,3 +6,4 @@ export { Header } from "./header";
 export { Modal } from "./modal";
 export { Button } from "./button";
 export { DateTimePicker } from "./dateTimePicker";
+export { ErrorBoundary } from "./errorBoundary";
