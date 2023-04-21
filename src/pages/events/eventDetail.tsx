@@ -1,24 +1,32 @@
 import React, { useState, ChangeEvent } from "react";
 import Swal from "sweetalert2";
-import { useLoaderData, useNavigate, useNavigation } from "react-router-dom";
+import {
+  useLoaderData,
+  useNavigate,
+  useNavigation,
+  useParams,
+} from "react-router-dom";
 import { MdOutlineDateRange } from "react-icons/md";
 
 import { Event } from "../../components/eventCard";
+import axios from "axios";
+import { toast } from "react-toastify";
 import {
   FullScreenLoader,
   Header,
   Button,
   Modal,
   TextInput,
+  EventTickets,
+  DeleteEventModal,
 } from "../../components";
-import axios from "axios";
-import { toast } from "react-toastify";
 
 const EventDetail = () => {
   const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
 
   const navigation = useNavigation();
   const navigate = useNavigate();
+  const { eventId } = useParams();
 
   const {
     _id,
@@ -54,7 +62,7 @@ const EventDetail = () => {
     setIsLoading(true);
     try {
       const token = localStorage.getItem("filmhouse-token");
-      const response = await axios.delete(url, {
+      const _response = await axios.delete(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
       Swal.fire({
@@ -128,53 +136,14 @@ const EventDetail = () => {
                 ))}
               </div>
             </div>
-            <div className="bg-blue-200 p-2 rounded-m">
-              <Header text="Ticket" />
-            </div>
-            <div className="bg-red-100 p-2 rounded-md my-3 lg:my-5">
-              <Header level={2} text="DELETE PROJECT" color="red" />
-              <Header
-                level={1}
-                text=" Note that this action is irreversible as no backup is provided."
-                customClasses="font-light"
-              />
-              <Button
-                text="Delete"
-                color="red"
-                handleClick={handleToggleDeleteModal}
-              />
-            </div>
-            <Modal open={openDeleteModal} handleClose={handleToggleDeleteModal}>
-              <div className="w-full p-2 bg-white shadow-md border-[0.5px] rounded-md flex flex-col gap-2">
-                <Header
-                  color="red"
-                  text="Please confirm you want to delete this event."
-                />
-                <p className="mb-3">
-                  Type the event <strong>{name}</strong> into the checkbox below
-                </p>
-                <TextInput
-                  type="text"
-                  label="Event Name"
-                  id="eventNameForDeletion"
-                  name="eventNameForDeletion"
-                  value={eventNameForDeletion}
-                  handleChange={handleEventNameForDeletionChange}
-                />
-                {name === eventNameForDeletion ? (
-                  <>
-                    <p className="font-bold mb-2 italic">
-                      Please note this action is irreversible.
-                    </p>
-                    <Button
-                      text="Delete"
-                      color="red"
-                      handleClick={handleDelete}
-                    />
-                  </>
-                ) : null}
-              </div>
-            </Modal>
+            <EventTickets eventId={eventId} />
+
+            {/* Delete Event Modal Code goes Here */}
+            <DeleteEventModal
+              eventId={_id}
+              name={name}
+              setIsLoading={setIsLoading}
+            />
           </>
         )}
       </section>

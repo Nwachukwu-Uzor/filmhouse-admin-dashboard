@@ -7,3 +7,5 @@ export { Modal } from "./modal";
 export { Button } from "./button";
 export { DateTimePicker } from "./dateTimePicker";
 export { ErrorBoundary } from "./errorBoundary";
+export { EventTickets } from "./eventTickets";
+export { DeleteEventModal } from "./deleteEventModal";
