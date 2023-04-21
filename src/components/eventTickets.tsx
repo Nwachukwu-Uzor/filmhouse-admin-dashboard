@@ -45,6 +45,10 @@ export const EventTickets: FC<EventTicketProps> = ({
     }
   };
 
+  const handleRefetch = async () => {
+    await refetch();
+  };
+
   return (
     <>
       <div className="bg-blue-200 p-2 rounded-md">
@@ -85,7 +89,7 @@ export const EventTickets: FC<EventTicketProps> = ({
         price={price}
         handlePriceChange={handlePriceChange}
         setIsLoading={setIsLoading}
-        refetchTickets={refetch}
+        refetchTickets={handleRefetch}
       />
     </>
   );
