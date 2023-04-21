@@ -22,10 +22,8 @@ import {
 } from "../../components";
 
 const EventDetail = () => {
-  const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
-
+  // const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
   const navigation = useNavigation();
-  const navigate = useNavigate();
   const { eventId } = useParams();
 
   const {
@@ -38,55 +36,7 @@ const EventDetail = () => {
     endDate,
     description,
   } = useLoaderData() as Event;
-  const [eventNameForDeletion, setEventNameForDeletion] = useState("");
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleEventNameForDeletionChange = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
-    setEventNameForDeletion(event?.target?.value);
-  };
-
-  const handleToggleDeleteModal = () => {
-    setOpenDeleteModal((currentState) => !currentState);
-    setEventNameForDeletion("");
-  };
-
-  const handleDelete = async () => {
-    if (eventNameForDeletion !== name) {
-      return;
-    }
-    const url = `${baseUrl}/event/${_id}`;
-
-    setIsLoading(true);
-    try {
-      const token = localStorage.getItem("filmhouse-token");
-      const _response = await axios.delete(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      Swal.fire({
-        icon: "success",
-        title: "Event Deleted Successfully",
-        text: "The event was deleted successfully",
-        didClose: () => {
-          toast.success("Event deleted successfully");
-          navigate(-1);
-        },
-      });
-    } catch (error: any) {
-      Swal.fire({
-        icon: "error",
-        title: "Error Occured",
-        text:
-          error?.response?.data?.message ??
-          error?.message ??
-          "Unable process request.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <>
@@ -136,9 +86,7 @@ const EventDetail = () => {
                 ))}
               </div>
             </div>
-            <EventTickets eventId={eventId} />
-
-            {/* Delete Event Modal Code goes Here */}
+            <EventTickets eventId={eventId} setIsLoading={setIsLoading} />
             <DeleteEventModal
               eventId={_id}
               name={name}

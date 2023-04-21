@@ -20,7 +20,12 @@ export const fetchTicketsForEvent = async (eventId: string | undefined) => {
   const token = localStorage.getItem("filmhouse-token");
 
   const response = await axios.get<TicketsApiResponse>(
-    `${baseUrl}/ticket/${eventId}/tickets`
+    `${baseUrl}/ticket/${eventId}/tickets`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   return response?.data;

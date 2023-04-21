@@ -9,3 +9,4 @@ export { DateTimePicker } from "./dateTimePicker";
 export { ErrorBoundary } from "./errorBoundary";
 export { EventTickets } from "./eventTickets";
 export { DeleteEventModal } from "./deleteEventModal";
+export { AddTicketModal } from "./addTicketModal";
