@@ -212,10 +212,10 @@ const Events = () => {
           title: "Event Created",
           didClose: () => {
             clearFields();
-            navigate(0);
             toast.success(
               response?.data?.message ?? "Event created successfully"
             );
+            window.location.reload();
           },
         });
       } catch (error: any) {
