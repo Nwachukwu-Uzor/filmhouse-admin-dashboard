@@ -19,8 +19,6 @@ import {
 import { EventsApiResponse } from "../../queries/fetchEvents";
 import { generateRandomId } from "../../utils";
 
-const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
-
 interface CreateEventApiResponse {
   message: string;
 }
@@ -40,6 +38,8 @@ const validationSchema = Yup.object().shape({
 });
 
 const Events = () => {
+  const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
+
   const { events } = useLoaderData() as EventsApiResponse;
   const navigation = useNavigation();
   const navigate = useNavigate();

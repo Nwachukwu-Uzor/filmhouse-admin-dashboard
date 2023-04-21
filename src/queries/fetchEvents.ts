@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Event } from "../components/eventCard";
-const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
 
 export interface EventsApiResponse {
   events: Event[];
@@ -10,6 +9,8 @@ export interface EventsApiResponse {
 }
 
 export const fetchEvents = async () => {
+  const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
+
   const token = localStorage.getItem("filmhouse-token");
   const response = await axios.get<EventsApiResponse>(
     `${baseUrl}/event/events`,

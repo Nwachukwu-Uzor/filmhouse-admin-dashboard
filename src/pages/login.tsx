@@ -9,8 +9,6 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
-
 const initialFieldValues = {
   password: "",
   email: "",
@@ -31,6 +29,8 @@ interface LoginApiResponse {
 }
 
 const Login = () => {
+  const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
+
   const navigate = useNavigate();
 
   const { values, handleSubmit, handleChange, touched, errors, isSubmitting } =

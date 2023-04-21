@@ -14,9 +14,9 @@ import {
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
-
 const EventDetail = () => {
+  const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
+
   const navigation = useNavigation();
   const navigate = useNavigate();
 
