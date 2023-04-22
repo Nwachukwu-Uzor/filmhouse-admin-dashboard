@@ -1,4 +1,4 @@
-import React, { FC, MouseEvent } from "react";
+import React, { FC, MouseEvent, ReactNode } from "react";
 
 interface ButtonProps {
   color?: "red" | "green" | "yellow" | "blue" | "black" | "white";
@@ -6,6 +6,8 @@ interface ButtonProps {
   handleClick?: (event?: MouseEvent) => void;
   type?: "button" | "submit" | "reset";
   full?: boolean;
+  icon?: ReactNode;
+  iconPosition?: "start" | "end";
 }
 
 const buttonColors = {
@@ -17,14 +19,26 @@ const buttonColors = {
   white: "bg-white active:ring-white active:ring-2 text-black",
 };
 
-export const Button: FC<ButtonProps> = ({ type, color, text, full, handleClick }) => {
+export const Button: FC<ButtonProps> = ({
+  type,
+  color,
+  text,
+  full,
+  icon,
+  iconPosition,
+  handleClick,
+}) => {
   return (
     <button
-      className={`py-2 px-3 lg:px-4 rounded-md my-2 ${full ? "w-full" : ""} ${
-        color ? buttonColors[color] : buttonColors["black"]
+      className={`py-2 px-3 lg:px-4 flex items-center gap-1 rounded-md my-2 ${
+        full ? "w-full" : ""
+      } ${color ? buttonColors[color] : buttonColors["black"]} ${
+        icon ? (iconPosition === "end" ? "flex-row-reverse" : "") : ""
       }`}
       onClick={handleClick}
+      type={type ?? "button"}
     >
+      {icon}
       {text}
     </button>
   );
