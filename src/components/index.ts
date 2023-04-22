@@ -10,4 +10,3 @@ export { ErrorBoundary } from "./errorBoundary";
 export { EventTickets } from "./eventTickets";
 export { DeleteEventModal } from "./deleteEventModal";
 export { AddTicketModal } from "./addTicketModal";
-export { DeleteItemModal } from "./deleteItemModal";

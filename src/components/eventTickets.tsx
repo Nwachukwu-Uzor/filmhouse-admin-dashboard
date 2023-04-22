@@ -14,15 +14,7 @@ import { MoonLoader } from "react-spinners";
 import { fetchTicketsForEvent } from "../queries";
 import { TicketsApiResponse } from "../queries/fetchTicketsForEvent";
 
-import {
-  Header,
-  Button,
-  AddTicketModal,
-  DeleteEventModal,
-  DeleteItemModal,
-  TextInput,
-  Modal,
-} from ".";
+import { Header, Button, AddTicketModal, TextInput, Modal } from ".";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -48,6 +40,8 @@ export const EventTickets: FC<EventTicketProps> = ({
   const handleToggleDeleteModal = () => {
     setOpenDeleteModal((currentState) => !currentState);
     setTicketNameForDeletion("");
+    setSelectedTicketName("");
+    setTicketIdForDeletion("");
   };
 
   const handleChangeTicketNameForDeletion = (
@@ -77,6 +71,16 @@ export const EventTickets: FC<EventTicketProps> = ({
   };
 
   const handleDeleteTicket = async () => {
+    if (ticketIdForDeletion.trim().length === 0) {
+      handleToggleDeleteModal();
+      return;
+    }
+
+    if (selectedTicketName.trim().length === 0) {
+      handleToggleDeleteModal();
+      return;
+    }
+
     const baseUrl = import.meta.env.VITE_SERVER_BASE_URL as string;
     const url = `${baseUrl}/ticket/${ticketIdForDeletion}`;
     setIsLoading(true);
@@ -95,7 +99,7 @@ export const EventTickets: FC<EventTicketProps> = ({
       );
     } finally {
       setIsLoading(false);
-      setOpenDeleteModal(false);
+      handleToggleDeleteModal();
     }
   };
 
@@ -162,10 +166,7 @@ export const EventTickets: FC<EventTicketProps> = ({
         setIsLoading={setIsLoading}
         refetchTickets={handleRefetch}
       />
-      <Modal
-        open={openDeleteModal}
-        handleClose={handleToggleDeleteModal}
-      >
+      <Modal open={openDeleteModal} handleClose={handleToggleDeleteModal}>
         <div className="w-full p-2 bg-white shadow-md border-[0.5px] rounded-md flex flex-col gap-2">
           <Header
             color="red"
