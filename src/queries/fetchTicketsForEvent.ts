@@ -1,6 +1,5 @@
 import axios from "axios";
-import { Ticket, Event, QueryKey } from "../types";
-import { QueryFunctionContext } from "react-query";
+import { Ticket, Event } from "../types";
 
 export interface TicketsApiResponse {
   tickets: Ticket[];

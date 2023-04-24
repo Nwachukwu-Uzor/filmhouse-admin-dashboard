@@ -30,7 +30,7 @@ export const Button: FC<ButtonProps> = ({
 }) => {
   return (
     <button
-      className={`py-2 px-3 lg:px-4 flex items-center gap-1 rounded-md my-2 ${
+      className={`py-2 px-3 lg:px-4 flex items-center gap-1 rounded-md my-2 duration-150 ${
         full ? "w-full" : ""
       } ${color ? buttonColors[color] : buttonColors["black"]} ${
         icon ? (iconPosition === "end" ? "flex-row-reverse" : "") : ""
